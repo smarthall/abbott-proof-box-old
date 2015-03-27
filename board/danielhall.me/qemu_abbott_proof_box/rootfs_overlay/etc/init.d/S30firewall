@@ -1,0 +1,32 @@
+#!/bin/sh
+
+[ -x /usr/sbin/iptables ] || exit 0
+[ -f /etc/network/iptables ] || exit 0
+
+case "$1" in
+	start)
+		echo -n "Starting firewall: "
+		/usr/sbin/iptables-restore < /etc/network/iptables
+		[ $? = 0 ] && echo "OK" || echo "FAIL"
+		;;
+	stop)
+		echo -n "Stopping firewall: "
+		/usr/sbin/iptables -t filter -F
+		/usr/sbin/iptables -t nat -F
+		[ $? = 0 ] && echo "OK" || echo "FAIL"
+		;;
+	restart|reload)
+		$0 stop
+		$0 start
+		;;
+	save)
+		/usr/sbin/iptables-save > /etc/network/iptables
+		[ $? = 0 ] && echo "Rules saved to /etc/network/iptables" || echo "Failed"
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|save}"
+		exit 1
+esac
+
+exit 0
+
