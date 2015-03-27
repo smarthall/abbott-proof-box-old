@@ -1,0 +1,27 @@
+#!/bin/sh
+
+[ -x /usr/bin/civetweb ] || exit 0
+[ -f /etc/civetweb.conf ] || exit 0
+
+case "$1" in
+	start)
+		echo -n "Starting civetweb: "
+		start-stop-daemon -S -b -x /usr/bin/civetweb /etc/civetweb.conf
+		[ $? = 0 ] && echo "OK" || echo "FAIL"
+		;;
+	stop)
+		echo -n "Stopping civetweb: "
+		start-stop-daemon -K -q -x /usr/bin/civetweb
+		[ $? = 0 ] && echo "OK" || echo "FAIL"
+		;;
+	restart|reload)
+		$0 stop
+		$0 start
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1
+esac
+
+exit 0
+
