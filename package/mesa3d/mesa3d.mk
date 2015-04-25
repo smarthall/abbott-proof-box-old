@@ -5,7 +5,7 @@
 ################################################################################
 
 # When updating the version, please also update mesa3d-headers
-MESA3D_VERSION = 10.5.1
+MESA3D_VERSION = 10.5.3
 MESA3D_SOURCE = mesa-$(MESA3D_VERSION).tar.xz
 MESA3D_SITE = ftp://ftp.freedesktop.org/pub/mesa/$(MESA3D_VERSION)
 MESA3D_LICENSE = MIT, SGI, Khronos
@@ -18,8 +18,6 @@ MESA3D_PROVIDES =
 
 MESA3D_DEPENDENCIES = \
 	expat \
-	host-gettext \
-	host-python-mako \
 	libdrm
 
 ifeq ($(BR2_PACKAGE_XORG7),y)
@@ -127,5 +125,8 @@ MESA3D_CONF_OPTS += --enable-gles1 --enable-gles2
 else
 MESA3D_CONF_OPTS += --disable-gles1 --disable-gles2
 endif
+
+# Avoid automatic search of llvm-config
+MESA3D_CONF_OPTS += --with-llvm-prefix=$(STAGING_DIR)/usr/bin
 
 $(eval $(autotools-package))

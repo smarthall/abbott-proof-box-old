@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI_VERSION = 14.1-Helix
+KODI_VERSION = 14.2-Helix
 KODI_SITE = $(call github,xbmc,xbmc,$(KODI_VERSION))
 KODI_LICENSE = GPLv2
 KODI_LICENSE_FILES = LICENSE.GPL
@@ -18,7 +18,7 @@ KODI_DEPENDENCIES = host-gawk host-gettext host-gperf host-infozip host-lzo \
 	host-nasm host-sdl_image host-swig
 KODI_DEPENDENCIES += boost bzip2 expat ffmpeg fontconfig freetype jasper jpeg \
 	libass libcdio libcurl libfribidi libgcrypt libmad libmodplug libmpeg2 \
-	libogg libplist libpng libsamplerate libungif libvorbis libxml2 libxslt lzo ncurses \
+	libogg libplist libpng libsamplerate libvorbis libxml2 libxslt lzo ncurses \
 	openssl pcre python readline sqlite taglib tiff tinyxml yajl zlib
 
 KODI_CONF_ENV = \
@@ -140,7 +140,7 @@ KODI_CONF_OPTS += --disable-webserver
 endif
 
 ifeq ($(BR2_PACKAGE_KODI_LIBSMBCLIENT),y)
-KODI_DEPENDENCIES += samba
+KODI_DEPENDENCIES += samba4
 KODI_CONF_OPTS += --enable-samba
 else
 KODI_CONF_OPTS += --disable-samba

@@ -200,9 +200,8 @@ define $(2)_CONFIGURE_CMDS
 		--with-xmlto=no \
 		--with-fop=no \
 		--disable-dependency-tracking \
+		--enable-ipv6 \
 		$$(DISABLE_NLS) \
-		$$(DISABLE_LARGEFILE) \
-		$$(DISABLE_IPV6) \
 		$$(ENABLE_DEBUG) \
 		$$(SHARED_STATIC_LIBS_OPTS) \
 		$$(QUIET) $$($$(PKG)_CONF_OPTS) \
