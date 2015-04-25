@@ -1,0 +1,149 @@
+From 815702c55125b94f536012cefdaf401dea05dc1c Mon Sep 17 00:00:00 2001
+From: Daniel Hall <daniel@danielhall.me>
+Date: Sat, 25 Apr 2015 17:06:36 +1000
+Subject: [PATCH] Adding config for the WT3020
+
+---
+ arch/mips/boot/dts/Makefile      |   1 +
+ arch/mips/boot/dts/WT3020-8M.dts | 100 +++++++++++++++++++++++++++++++++++++++
+ arch/mips/ralink/Kconfig         |   5 ++
+ 3 files changed, 106 insertions(+)
+ create mode 100644 arch/mips/boot/dts/WT3020-8M.dts
+
+diff --git a/arch/mips/boot/dts/Makefile b/arch/mips/boot/dts/Makefile
+index 4f49fa4..e27b7cc 100644
+--- a/arch/mips/boot/dts/Makefile
++++ b/arch/mips/boot/dts/Makefile
+@@ -9,6 +9,7 @@ dtb-$(CONFIG_DTB_RT2880_EVAL)		+= rt2880_eval.dtb
+ dtb-$(CONFIG_DTB_RT305X_EVAL)		+= rt3052_eval.dtb
+ dtb-$(CONFIG_DTB_RT3883_EVAL)		+= rt3883_eval.dtb
+ dtb-$(CONFIG_DTB_MT7620A_EVAL)		+= mt7620a_eval.dtb
++dtb-$(CONFIG_DTB_WT3020-8M)		+= WT3020-8M.dtb
+ dtb-$(CONFIG_MIPS_SEAD3)		+= sead3.dtb
+ 
+ obj-y		+= $(patsubst %.dtb, %.dtb.o, $(dtb-y))
+diff --git a/arch/mips/boot/dts/WT3020-8M.dts b/arch/mips/boot/dts/WT3020-8M.dts
+new file mode 100644
+index 0000000..5fa7c92
+--- /dev/null
++++ b/arch/mips/boot/dts/WT3020-8M.dts
+@@ -0,0 +1,100 @@
++/dts-v1/;
++
++/include/ "mt7620n.dtsi"
++
++/ {
++	compatible = "wt3020", "ralink,mt7620n-soc";
++	model = "Nexx WT3020";
++
++	palmbus@10000000 {
++                gpio2: gpio@660 {
++                        status = "okay";
++                };
++
++                gpio3: gpio@688 {
++                        status = "okay";
++                };
++
++		spi@b00 {
++			status = "okay";
++
++			m25p80@0 {
++				#address-cells = <1>;
++				#size-cells = <1>;
++				compatible = "w25q64";
++				reg = <0 0>;
++				linux,modalias = "m25p80", "w25q64";
++				spi-max-frequency = <10000000>;
++
++				partition@0 {
++					label = "u-boot";
++					reg = <0x0 0x30000>;
++					read-only;
++				};
++
++				partition@30000 {
++					label = "u-boot-env";
++					reg = <0x30000 0x10000>;
++					read-only;
++				};
++
++				factory: partition@40000 {
++					label = "factory";
++					reg = <0x40000 0x10000>;
++					read-only;
++				};
++
++				partition@50000 {
++					label = "firmware";
++					reg = <0x50000 0x7b0000>;
++				};
++			};
++		};
++	};
++
++	ehci@101c0000 {
++		status = "okay";
++	};
++
++	ohci@101c1000 {
++		status = "okay";
++	};
++
++	ethernet@10100000 {
++		mtd-mac-address = <&factory 0x4>;
++		ralink,port-map = "wllll";
++	};
++
++	wmac@10180000 {
++		ralink,mtd-eeprom = <&factory 0>;
++	};
++
++	pinctrl {
++		state_default: pinctrl0 {
++			default {
++				ralink,group = "ephy", "wled", "pa", "i2c", "wdt", "uartf";
++				ralink,function = "gpio";
++			};
++		};
++	};
++
++	gpio-keys-polled {
++		compatible = "gpio-keys-polled";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		poll-interval = <20>;
++		reset {
++			label = "reset";
++			gpios = <&gpio0 1 1>;
++			linux,code = <0x198>;
++		};
++	};
++
++        gpio-leds {
++                compatible = "gpio-leds";
++                power {
++                        label = "nexx:blue:power";
++                        gpios = <&gpio3 0 0>;
++                };
++        };
++};
+diff --git a/arch/mips/ralink/Kconfig b/arch/mips/ralink/Kconfig
+index b1c52ca..16c2a62 100644
+--- a/arch/mips/ralink/Kconfig
++++ b/arch/mips/ralink/Kconfig
+@@ -60,6 +60,11 @@ choice
+ 		depends on SOC_MT7620
+ 		select BUILTIN_DTB
+ 
++	config DTB_WT3020-8M
++		bool "WT3020-8M"
++		depends on SOC_MT7620
++		select BUILTIN_DTB
++
+ endchoice
+ 
+ endif
+-- 
+2.1.0
+
